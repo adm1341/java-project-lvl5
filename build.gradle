@@ -73,7 +73,7 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 jar {
-	baseName = 'heroku-gradle-spring-boot'
+	baseName = 'app-0.0.1-SNAPSHOT'
 }
 installDist.mustRunAfter clean
 
