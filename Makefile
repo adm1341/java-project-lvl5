@@ -2,7 +2,7 @@ matest:
 	gradle test
 
 start:
-	gradle bootRun
+	./gradlew bootRun --args='--spring.profiles.active=dev'
 
 setup:
 	gradle wrapper --gradle-version 7.3
