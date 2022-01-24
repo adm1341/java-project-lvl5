@@ -11,11 +11,11 @@ plugins {
 
 group = 'hexlet.code'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '17'
+sourceCompatibility = '16'
 
 compileJava {
 	compileJava.options.encoding = "UTF-8"
-	options.release = 17
+	options.release = 16
 }
 
 repositories {
@@ -35,6 +35,12 @@ dependencies {
 	implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.5.12'
 }
 
+jacocoTestReport {
+	reports {
+		xml.required = true
+	}
+}
+
 tasks.named('test') {
 	useJUnitPlatform()
 }
@@ -42,8 +48,4 @@ jar {
 	baseName = 'heroku-gradle-spring-boot'
 }
 installDist.mustRunAfter clean
-jacocoTestReport {
-	reports {
-		xml.required = true
-	}
-}
+
