@@ -1,11 +1,11 @@
-test:
+matest:
 	gradle test
 
 start:
 	gradle bootRun
 
 setup:
-	gradle wrapper --gradle-version 7.2
+	gradle wrapper --gradle-version 7.3
 
 clean:
 	./gradlew clean
