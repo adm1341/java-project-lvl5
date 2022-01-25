@@ -16,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
@@ -95,6 +97,48 @@ public class UserControllerTests {
 
         assertThat(response2.getStatus()).isEqualTo(200);
         assertThat(response2.getContentAsString()).contains("John", "John@gmail.com");
+
+    }
+
+    @Test
+    void testUpdateUser() throws Exception {
+        String content = "{\"firstName\": \"Petr_12\", \"lastName\": \"Ivanov\",\"email\": \"petrilo@yandex.ru\", \"password\": \"mypass\"}";
+
+        MockHttpServletResponse responsePost = mockMvc
+                .perform(
+                        put("/users/2")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(content)
+                )
+                .andReturn()
+                .getResponse();
+
+        assertThat(responsePost.getStatus()).isEqualTo(200);
+
+
+        User actualUser = userRepository.findByEmail("petrilo@yandex.ru").get();
+        assertThat(actualUser).isNotNull();
+        assertThat(actualUser.getFirstName()).isEqualTo("Petr_12");
+
+        // Проверяем, что пароль хранится в базе в зашифрованном виде
+        assertThat(actualUser.getPassword()).isNotEqualTo("mypass");
+
+    }
+
+    @Test
+    void testDeleteUserById() throws Exception {
+        MockHttpServletResponse response2 = mockMvc
+                .perform(
+                        delete("/users/3")
+                )
+                .andReturn()
+                .getResponse();
+
+        assertThat(response2.getStatus()).isEqualTo(200);
+
+        User actualUser = userRepository.findByEmail("Jassica@gmail.com").orElse(null);
+        assertThat(actualUser).isNull();
+
 
     }
 }
