@@ -4,6 +4,7 @@ import com.github.database.rider.core.api.dataset.DataSet;
 import com.github.database.rider.junit5.api.DBRider;
 import hexlet.code.app.model.User;
 import hexlet.code.app.repository.UserRepository;
+import hexlet.code.app.utils.TestUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -13,6 +14,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import static hexlet.code.app.controller.UserController.USER_CONTROLLER_PATH;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -32,15 +34,20 @@ public class UserControllerTests {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    private TestUtils utils;
+
     @Test
     void testCreateUser() throws Exception {
         String content = "{\"firstName\": \"Petr_12\", \"lastName\": \"Ivanov\",\"email\": \"petrilo@yandex.ru\", \"password\": \"mypass\"}";
 
         MockHttpServletResponse responsePost = mockMvc
                 .perform(
-                        post("/users/")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(content)
+                        utils.setJWTToken(
+                                post(USER_CONTROLLER_PATH)
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .content(content),
+                                "John@gmail.com")
                 )
                 .andReturn()
                 .getResponse();
@@ -56,26 +63,30 @@ public class UserControllerTests {
         assertThat(actualUser.getPassword()).isNotEqualTo("mypass");
 
     }
+
     @Test
     void tesUnCorrectCreateUser() throws Exception {
         String content = "{\"firstName\": \"\", \"lastName\": \"Ivanov\", \"password\": \"my\"}";
 
         MockHttpServletResponse responsePost = mockMvc
                 .perform(
-                        post("/users/")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(content)
+                        utils.setJWTToken(
+                                post(USER_CONTROLLER_PATH)
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .content(content),
+                                "John@gmail.com")
                 )
                 .andReturn()
                 .getResponse();
 
         assertThat(responsePost.getStatus()).isEqualTo(422);
     }
+
     @Test
     void testShowUsers() throws Exception {
         MockHttpServletResponse response1 = mockMvc
                 .perform(
-                        get("/users")
+                        get(USER_CONTROLLER_PATH)
                 )
                 .andReturn()
                 .getResponse();
@@ -86,11 +97,14 @@ public class UserControllerTests {
 
 
     }
+
     @Test
     void testShowUserById() throws Exception {
         MockHttpServletResponse response2 = mockMvc
                 .perform(
-                        get("/users/1")
+                        utils.setJWTToken(
+                                get(USER_CONTROLLER_PATH + "/1"),
+                                "John@gmail.com")
                 )
                 .andReturn()
                 .getResponse();
@@ -106,9 +120,11 @@ public class UserControllerTests {
 
         MockHttpServletResponse responsePost = mockMvc
                 .perform(
-                        put("/users/2")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(content)
+                        utils.setJWTToken(
+                                put(USER_CONTROLLER_PATH + "/1")
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .content(content),
+                                "John@gmail.com")
                 )
                 .andReturn()
                 .getResponse();
@@ -126,19 +142,51 @@ public class UserControllerTests {
     }
 
     @Test
+    void testUpdateUserFail() throws Exception {
+        String content = "{\"firstName\": \"Petr_12\", \"lastName\": \"Ivanov\",\"email\": \"petrilo@yandex.ru\", \"password\": \"mypass\"}";
+
+        MockHttpServletResponse responsePost = mockMvc
+                .perform(
+                        utils.setJWTToken(
+                                put(USER_CONTROLLER_PATH + "/2")
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .content(content),
+                                "John@gmail.com")
+                )
+                .andReturn()
+                .getResponse();
+
+        assertThat(responsePost.getStatus()).isEqualTo(403);
+    }
+
+    @Test
     void testDeleteUserById() throws Exception {
         MockHttpServletResponse response2 = mockMvc
                 .perform(
-                        delete("/users/3")
+                        utils.setJWTToken(
+                                delete(USER_CONTROLLER_PATH + "/1"),
+                                "John@gmail.com")
                 )
                 .andReturn()
                 .getResponse();
 
         assertThat(response2.getStatus()).isEqualTo(200);
 
-        User actualUser = userRepository.findByEmail("Jassica@gmail.com").orElse(null);
+        User actualUser = userRepository.findByEmail("John@gmail.com").orElse(null);
         assertThat(actualUser).isNull();
+    }
 
+    @Test
+    void testDeleteUserByIdFail() throws Exception {
+        MockHttpServletResponse response2 = mockMvc
+                .perform(
+                        utils.setJWTToken(
+                                delete(USER_CONTROLLER_PATH + "/2"),
+                                "John@gmail.com")
+                )
+                .andReturn()
+                .getResponse();
 
+        assertThat(response2.getStatus()).isEqualTo(403);
     }
 }

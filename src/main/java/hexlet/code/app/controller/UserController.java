@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.AllArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -27,6 +28,9 @@ public class UserController {
 
     public static final String USER_CONTROLLER_PATH = "/users";
     public static final String ID = "/{id}";
+    private static final String ONLY_OWNER_BY_ID = """
+            @userRepository.findById(#id).get().getEmail() == authentication.getName()
+        """;
 
     private final UserService userService;
     private final UserRepository userRepository;
@@ -59,11 +63,13 @@ public class UserController {
     }
 
     @PutMapping(ID)
+    @PreAuthorize(ONLY_OWNER_BY_ID)
     public User update(@PathVariable final long id, @RequestBody @Valid final UserDto dto) {
         return userService.updateUser(id, dto);
     }
 
     @DeleteMapping(ID)
+    @PreAuthorize(ONLY_OWNER_BY_ID)
     public void delete(@PathVariable final long id) {
         userRepository.deleteById(id);
     }
