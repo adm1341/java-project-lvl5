@@ -5,6 +5,7 @@ import hexlet.code.app.model.User;
 import hexlet.code.app.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +38,16 @@ public class UserService {
         userToUpdate.setLastName(userDto.getLastName());
         userToUpdate.setPassword(passwordEncoder.encode(userDto.getPassword()));
         return userRepository.save(userToUpdate);
+    }
+
+
+    public String getCurrentUserName() {
+        return SecurityContextHolder.getContext().getAuthentication().getName();
+    }
+
+
+    public User getCurrentUser() {
+        return userRepository.findByEmail(getCurrentUserName()).get();
     }
 
 }

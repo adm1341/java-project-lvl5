@@ -1,0 +1,81 @@
+package hexlet.code.app.controller;
+
+import hexlet.code.app.dto.TaskDto;
+import hexlet.code.app.model.Task;
+import hexlet.code.app.repository.TaskRepository;
+import hexlet.code.app.service.TaskService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import lombok.AllArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.util.List;
+
+import static hexlet.code.app.controller.TaskController.TASK_CONTROLLER_PATH;
+import static org.springframework.http.HttpStatus.CREATED;
+
+@AllArgsConstructor
+@RestController
+@RequestMapping("${base-url}" + TASK_CONTROLLER_PATH)
+public class TaskController {
+    public static final String TASK_CONTROLLER_PATH = "/tasks";
+    public static final String ID = "/{id}";
+
+    private static final String ONLY_AUTHOR_BY_ID = """
+            @TaskRepository.findById(#id).get().getAuthor().getEmail() == authentication.getName()
+        """;
+
+    private final TaskRepository taskRepository;
+    private final TaskService taskService;
+
+    @Operation(summary = "Get All tasks")
+    @GetMapping
+    public List<Task> getAll() {
+        return taskRepository.findAll();
+    }
+
+    @Operation(summary = "Get task by Id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "post found"),
+            @ApiResponse(responseCode = "404", description = "post with that id not found")
+    })
+    @GetMapping(ID)
+    public Task getById(@PathVariable final Long id) {
+        return taskRepository.findById(id).get();
+    }
+
+    @Operation(summary = "Create new task")
+    @ApiResponse(responseCode = "201", description = "task created")
+    @PostMapping
+    @ResponseStatus(CREATED)
+    public Task createNewTask(@RequestBody @Valid final TaskDto dto) {
+        return taskService.createNewTask(dto);
+    }
+
+    @Operation(summary = "Update task")
+    @ApiResponse(responseCode = "200", description = "task updated")
+    @PutMapping(ID)
+    @PreAuthorize(ONLY_AUTHOR_BY_ID)
+    public Task updateTask(@PathVariable final Long id,
+                           // Schema используется, чтобы указать тип данных для параметра
+                           @Parameter(schema = @Schema(implementation = TaskDto.class))
+                           @RequestBody @Valid  final TaskDto dto) {
+        return taskService.updateTask(id, dto);
+    }
+
+    @Operation(summary = "Delete post")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "post deleted"),
+            @ApiResponse(responseCode = "404", description = "post with that id not found")
+    })
+    @DeleteMapping(ID)
+    @PreAuthorize(ONLY_AUTHOR_BY_ID)
+    public void deleteTask(@PathVariable final Long id) {
+        taskRepository.deleteById(id);
+    }
+}
