@@ -40,20 +40,30 @@ public class TaskService {
 
     private void merge(final Task task, final TaskDto postDto) {
         final Task newTask = fromDto(postDto);
-        task.setName(newTask.getName());
-        task.setDescription(newTask.getDescription());
-        task.setExecutor(newTask.getExecutor());
-        task.setTaskStatus(newTask.getTaskStatus());
+        if (newTask.getName() != null) {
+            task.setName(newTask.getName());
+        }
+        if (newTask.getDescription() != null) {
+            task.setDescription(newTask.getDescription());
+        }
+        if (newTask.getExecutor() != null) {
+            task.setExecutor(newTask.getExecutor());
+        }
+        if (newTask.getTaskStatus() != null) {
+            task.setTaskStatus(newTask.getTaskStatus());
+        }
 
     }
 
     private Task fromDto(final TaskDto dto) {
         final User author = userService.getCurrentUser();
 
-        final TaskStatus taskStatus = taskStatusRepository.findById(dto.getTaskStatusId()).get();
+        final TaskStatus taskStatus = this.taskStatusRepository.findById(dto.getTaskStatusId()).get();
 
-        final User executor = userRepository.findById(dto.getExecutorId()).orElse(null);
-
+        User executor = null;
+        if (dto.getExecutorId() != null) {
+            executor = userRepository.findById(dto.getExecutorId()).orElse(null);
+        }
 
         return Task.builder()
                 .author(author)

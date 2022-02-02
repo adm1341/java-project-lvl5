@@ -3,6 +3,7 @@ package hexlet.code.app.controller;
 import com.github.database.rider.core.api.dataset.DataSet;
 import com.github.database.rider.junit5.api.DBRider;
 import hexlet.code.app.dto.TaskDto;
+import hexlet.code.app.model.Task;
 import hexlet.code.app.model.TaskStatus;
 import hexlet.code.app.repository.TaskRepository;
 import hexlet.code.app.repository.TaskStatusRepository;
@@ -25,16 +26,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @AutoConfigureMockMvc
 @Transactional
 @DBRider
-@DataSet({"users.yml", "taskStatus.yml"})
+@DataSet({"users.yml", "taskStatus.yml","task.yml"})
 public class TaskControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
     TaskRepository taskRepository;
-
-    @Autowired
-    TaskStatusRepository taskStatusRepository;
 
     @Autowired
     private TestUtils utils;
@@ -49,9 +47,6 @@ public class TaskControllerTest {
         taskDto.setTaskStatusId(1L);
 
         String content = utils.asJson(taskDto);
-
-        TaskStatus actualStatus = taskStatusRepository.getById(1L);
-        System.out.println(actualStatus);
 
         MockHttpServletResponse responsePost = mockMvc
                 .perform(
@@ -68,13 +63,18 @@ public class TaskControllerTest {
     }
 
     @Test
-    void tesUnCreateStatus() throws Exception {
-        String content = "{\"name\": \"\"}";
+    void tesUnCreateTask() throws Exception {
+        final TaskDto taskDto = new TaskDto();
+        taskDto.setDescription("Описание новой задачи");
+        taskDto.setExecutorId(1L);
+        taskDto.setTaskStatusId(1L);
+
+        String content = utils.asJson(taskDto);
 
         MockHttpServletResponse responsePost = mockMvc
                 .perform(
                         utils.setJWTToken(
-                                post(TASK_STATUS_CONTROLLER_PATH)
+                                post(TASK_CONTROLLER_PATH)
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .content(content),
                                 "John@gmail.com")
@@ -84,57 +84,63 @@ public class TaskControllerTest {
 
         assertThat(responsePost.getStatus()).isEqualTo(422);
     }
-//
-//    @Test
-//    void testShowStatusById() throws Exception {
-//        MockHttpServletResponse response2 = mockMvc
-//                .perform(
-//                        utils.setJWTToken(
-//                                get(TASK_STATUS_CONTROLLER_PATH + "/1"),
-//                                "John@gmail.com")
-//                )
-//                .andReturn()
-//                .getResponse();
-//
-//        assertThat(response2.getStatus()).isEqualTo(200);
-//    }
-//
-//    @Test
-//    void testUpdateStatus() throws Exception {
-//        String content = "{\"name\": \"НеНовый\"}";
-//        MockHttpServletResponse responsePost = mockMvc
-//                .perform(
-//                        utils.setJWTToken(
-//                                put(TASK_STATUS_CONTROLLER_PATH + "/1")
-//                                        .contentType(MediaType.APPLICATION_JSON)
-//                                        .content(content),
-//                                "John@gmail.com")
-//                )
-//                .andReturn()
-//                .getResponse();
-//
-//        assertThat(responsePost.getStatus()).isEqualTo(200);
-//
-//
-//        TaskStatus actualStatus = taskStatusRepository.getById(1L);
-//        assertThat(actualStatus).isNotNull();
-//        assertThat(actualStatus.getName()).isEqualTo("НеНовый");
-//
-//    }
-//
-//    @Test
-//    void testDeleteUserById() throws Exception {
-//        MockHttpServletResponse response2 = mockMvc
-//                .perform(
-//                        utils.setJWTToken(
-//                                delete(TASK_STATUS_CONTROLLER_PATH + "/2"),
-//                                "John@gmail.com")
-//                )
-//                .andReturn()
-//                .getResponse();
-//
-//        assertThat(response2.getStatus()).isEqualTo(200);
-//
-//        assertThat(taskStatusRepository.existsById(2L)).isFalse();
-//    }
+
+    @Test
+    void testShowTaskById() throws Exception {
+        MockHttpServletResponse response2 = mockMvc
+                .perform(
+                        utils.setJWTToken(
+                                get(TASK_CONTROLLER_PATH + "/1"),
+                                "John@gmail.com")
+                )
+                .andReturn()
+                .getResponse();
+
+        assertThat(response2.getStatus()).isEqualTo(200);
+    }
+
+    @Test
+    void testUpdateTask() throws Exception {
+        final TaskDto taskDto = new TaskDto();
+        taskDto.setName("НеНовый");
+        taskDto.setDescription("Описание новой задачи");
+        taskDto.setExecutorId(1L);
+        taskDto.setTaskStatusId(1L);
+
+        String content = utils.asJson(taskDto);
+        MockHttpServletResponse responsePost = mockMvc
+                .perform(
+                        utils.setJWTToken(
+                                put(TASK_CONTROLLER_PATH + "/1")
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .content(content),
+                                "John@gmail.com")
+                )
+                .andReturn()
+                .getResponse();
+
+        assertThat(responsePost.getStatus()).isEqualTo(200);
+
+
+        Task actualTask = taskRepository.getById(1L);
+        assertThat(actualTask).isNotNull();
+        assertThat(actualTask.getName()).isEqualTo("НеНовый");
+
+    }
+
+    @Test
+    void testDeleteTaskById() throws Exception {
+        MockHttpServletResponse response2 = mockMvc
+                .perform(
+                        utils.setJWTToken(
+                                delete(TASK_CONTROLLER_PATH + "/2"),
+                                "John@gmail.com")
+                )
+                .andReturn()
+                .getResponse();
+
+        assertThat(response2.getStatus()).isEqualTo(200);
+
+        assertThat(taskRepository.existsById(2L)).isFalse();
+    }
 }

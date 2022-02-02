@@ -41,8 +41,8 @@ public class TaskController {
 
     @Operation(summary = "Get task by Id")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "post found"),
-            @ApiResponse(responseCode = "404", description = "post with that id not found")
+            @ApiResponse(responseCode = "200", description = "task found"),
+            @ApiResponse(responseCode = "404", description = "task with that id not found")
     })
     @GetMapping(ID)
     public Task getById(@PathVariable final Long id) {
@@ -60,7 +60,6 @@ public class TaskController {
     @Operation(summary = "Update task")
     @ApiResponse(responseCode = "200", description = "task updated")
     @PutMapping(ID)
-    @PreAuthorize(ONLY_AUTHOR_BY_ID)
     public Task updateTask(@PathVariable final Long id,
                            // Schema используется, чтобы указать тип данных для параметра
                            @Parameter(schema = @Schema(implementation = TaskDto.class))
@@ -68,13 +67,12 @@ public class TaskController {
         return taskService.updateTask(id, dto);
     }
 
-    @Operation(summary = "Delete post")
+    @Operation(summary = "Delete task")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "post deleted"),
-            @ApiResponse(responseCode = "404", description = "post with that id not found")
+            @ApiResponse(responseCode = "200", description = "task deleted"),
+            @ApiResponse(responseCode = "404", description = "task with that id not found")
     })
     @DeleteMapping(ID)
-    @PreAuthorize(ONLY_AUTHOR_BY_ID)
     public void deleteTask(@PathVariable final Long id) {
         taskRepository.deleteById(id);
     }
