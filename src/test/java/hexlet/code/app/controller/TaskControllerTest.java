@@ -1,5 +1,6 @@
 package hexlet.code.app.controller;
 
+import com.github.database.rider.core.api.configuration.DBUnit;
 import com.github.database.rider.core.api.dataset.DataSet;
 import com.github.database.rider.junit5.api.DBRider;
 import hexlet.code.app.dto.TaskDto;
@@ -24,9 +25,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-@Transactional
+//@Transactional
 @DBRider
-@DataSet({"users.yml", "taskStatus.yml","task.yml"})
+@DBUnit(cacheConnection = true, cacheTableNames = false, allowEmptyFields = true, batchSize = 50)
+@DataSet(value = {"users.yml", "taskStatus.yml", "task.yml"}, disableConstraints = true, cleanAfter = true, transactional = true)
 public class TaskControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -122,7 +124,7 @@ public class TaskControllerTest {
         assertThat(responsePost.getStatus()).isEqualTo(200);
 
 
-        Task actualTask = taskRepository.getById(1L);
+        Task actualTask = taskRepository.findById(1L).get();
         assertThat(actualTask).isNotNull();
         assertThat(actualTask.getName()).isEqualTo("НеНовый");
 

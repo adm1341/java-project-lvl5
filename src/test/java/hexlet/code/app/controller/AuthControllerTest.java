@@ -1,5 +1,6 @@
 package hexlet.code.app.controller;
 
+import com.github.database.rider.core.api.configuration.DBUnit;
 import com.github.database.rider.core.api.dataset.DataSet;
 import com.github.database.rider.junit5.api.DBRider;
 import hexlet.code.app.dto.LoginDto;
@@ -20,9 +21,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-@Transactional
+//@Transactional
 @DBRider
-@DataSet("users.yml")
+@DBUnit(cacheConnection = true, cacheTableNames = false, allowEmptyFields = true, batchSize = 50)
+@DataSet(value ="users.yml", disableConstraints = true, cleanAfter = true, transactional = true)
 public class AuthControllerTest {
 
     @Autowired
