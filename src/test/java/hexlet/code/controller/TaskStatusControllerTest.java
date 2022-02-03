@@ -15,7 +15,10 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static hexlet.code.controller.TaskStatusController.TASK_STATUS_CONTROLLER_PATH;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
@@ -26,7 +29,7 @@ public class TaskStatusControllerTest {
     private MockMvc mockMvc;
 
     @Autowired
-    TaskStatusRepository taskStatusRepository;
+    private TaskStatusRepository taskStatusRepository;
 
     @Autowired
     private TestUtils utils;

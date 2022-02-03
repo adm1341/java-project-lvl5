@@ -15,7 +15,10 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static hexlet.code.controller.LabelController.LABEL_CONTROLLER_PATH;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
@@ -26,7 +29,7 @@ public class LabelControllerTest {
     private MockMvc mockMvc;
 
     @Autowired
-    LabelRepository labelRepository;
+    private LabelRepository labelRepository;
 
     @Autowired
     private TestUtils utils;

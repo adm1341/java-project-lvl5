@@ -13,7 +13,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.List;
 
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 
 @ResponseBody
 @ControllerAdvice
@@ -35,6 +38,7 @@ public class BaseExceptionHandler {
     public String validationExceptionsHandler(DataIntegrityViolationException exception) {
         return exception.getCause().getCause().getMessage();
     }
+
     @ResponseStatus(FORBIDDEN)
     @ExceptionHandler(AccessDeniedException.class)
     public String accessDeniedException(AccessDeniedException exception) {

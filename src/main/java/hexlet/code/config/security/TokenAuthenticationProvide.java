@@ -2,6 +2,7 @@ package hexlet.code.config.security;
 
 import hexlet.code.model.User;
 import hexlet.code.service.TokenAuthenticationService;
+
 import java.util.Collection;
 import java.util.List;
 

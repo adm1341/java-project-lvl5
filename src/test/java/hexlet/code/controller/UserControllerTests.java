@@ -15,7 +15,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
@@ -27,14 +29,18 @@ public class UserControllerTests {
     private MockMvc mockMvc;
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     @Autowired
     private TestUtils utils;
 
     @Test
     void testCreateUser() throws Exception {
-        String content = "{\"firstName\": \"Petr_12\", \"lastName\": \"Ivanov\",\"email\": \"petrilo@yandex.ru\", \"password\": \"mypass\"}";
+        String content = "{\"firstName\": \"Petr_12\","
+                + " \"lastName\": \"Ivanov\","
+                + "\"email\": \"petrilo@yandex.ru\", "
+                + "\"password\": \"mypass\"}";
+
 
         MockHttpServletResponse responsePost = mockMvc
                 .perform(
@@ -61,7 +67,9 @@ public class UserControllerTests {
 
     @Test
     void tesUnCorrectCreateUser() throws Exception {
-        String content = "{\"firstName\": \"\", \"lastName\": \"Ivanov\", \"password\": \"my\"}";
+        String content = "{\"firstName\": \"\", "
+                + "\"lastName\": \"Ivanov\", "
+                + "\"password\": \"my\"}";
 
         MockHttpServletResponse responsePost = mockMvc
                 .perform(
@@ -111,7 +119,10 @@ public class UserControllerTests {
 
     @Test
     void testUpdateUser() throws Exception {
-        String content = "{\"firstName\": \"Petr_12\", \"lastName\": \"Ivanov\",\"email\": \"petrilo@yandex.ru\", \"password\": \"mypass\"}";
+        String content = "{\"firstName\": \"Petr_12\", "
+                + "\"lastName\": \"Ivanov\","
+                + "\"email\": \"petrilo@yandex.ru\","
+                + " \"password\": \"mypass\"}";
 
         MockHttpServletResponse responsePost = mockMvc
                 .perform(
@@ -138,7 +149,10 @@ public class UserControllerTests {
 
     @Test
     void testUpdateUserFail() throws Exception {
-        String content = "{\"firstName\": \"Petr_12\", \"lastName\": \"Ivanov\",\"email\": \"petrilo@yandex.ru\", \"password\": \"mypass\"}";
+        String content = "{\"firstName\": \"Petr_12\","
+                + " \"lastName\": \"Ivanov\","
+                + "\"email\": \"petrilo@yandex.ru\","
+                + " \"password\": \"mypass\"}";
 
         MockHttpServletResponse responsePost = mockMvc
                 .perform(

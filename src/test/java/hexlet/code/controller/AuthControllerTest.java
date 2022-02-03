@@ -15,19 +15,18 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @DBRider
-@DataSet(value ="users.yml", cleanAfter = true, transactional = true)
+@DataSet(value = "users.yml", cleanAfter = true, transactional = true)
 public class AuthControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     @Test
     public void login() throws Exception {
@@ -50,6 +49,7 @@ public class AuthControllerTest {
         assertThat(responsePost.getStatus()).isEqualTo(200);
 
     }
+
     @Test
     public void loginFail() throws Exception {
 
