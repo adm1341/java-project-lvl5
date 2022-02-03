@@ -1,5 +1,6 @@
 package hexlet.code.app.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.github.database.rider.core.api.dataset.DataSet;
 import com.github.database.rider.junit5.api.DBRider;
 import hexlet.code.app.dto.TaskDto;
@@ -13,6 +14,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.List;
 
 import static hexlet.code.app.controller.TaskController.TASK_CONTROLLER_PATH;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -137,5 +140,27 @@ public class TaskControllerTest {
         assertThat(response2.getStatus()).isEqualTo(200);
 
         assertThat(taskRepository.existsById(2L)).isFalse();
+    }
+
+    @Test
+    void testFilterByStatusAndLabelAndExecutor() throws Exception {
+        MockHttpServletResponse response = mockMvc
+                .perform(
+                        utils.setJWTToken(
+                                get(TASK_CONTROLLER_PATH + "?taskStatus=1&executorId=1&labels=1"),
+                                "John@gmail.com")
+                )
+                .andReturn()
+                .getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(200);
+        assertThat(response.getContentType()).isEqualTo(MediaType.APPLICATION_JSON.toString());
+
+        List<Task> actualUsers = TestUtils.fromJson(response.getContentAsString(),
+                new TypeReference<List<Task>>() {
+                });
+
+        assertThat(actualUsers.size()).isEqualTo(1);
+
     }
 }

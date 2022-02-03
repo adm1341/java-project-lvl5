@@ -1,5 +1,6 @@
 package hexlet.code.app.controller;
 
+import com.querydsl.core.types.Predicate;
 import hexlet.code.app.dto.TaskDto;
 import hexlet.code.app.model.Task;
 import hexlet.code.app.repository.TaskRepository;
@@ -10,11 +11,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.AllArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 import static hexlet.code.app.controller.TaskController.TASK_CONTROLLER_PATH;
 import static org.springframework.http.HttpStatus.CREATED;
@@ -27,16 +27,20 @@ public class TaskController {
     public static final String ID = "/{id}";
 
     private static final String ONLY_AUTHOR_BY_ID = """
-            @TaskRepository.findById(#id).get().getAuthor().getEmail() == authentication.getName()
-        """;
+                @TaskRepository.findById(#id).get().getAuthor().getEmail() == authentication.getName()
+            """;
 
     private final TaskRepository taskRepository;
     private final TaskService taskService;
 
     @Operation(summary = "Get All tasks")
     @GetMapping
-    public List<Task> getAll() {
-        return taskRepository.findAll();
+    public Iterable<Task> getAll(@QuerydslPredicate(root = Task.class) Predicate predicate,
+                                 @RequestParam(required = false) Long taskStatus,
+                                 @RequestParam(required = false) Long executorId,
+                                 @RequestParam(required = false) Long labels,
+                                 @RequestParam(required = false) String authorId) {
+        return taskRepository.findAll(predicate);
     }
 
     @Operation(summary = "Get task by Id")
@@ -63,7 +67,7 @@ public class TaskController {
     public Task updateTask(@PathVariable final Long id,
                            // Schema используется, чтобы указать тип данных для параметра
                            @Parameter(schema = @Schema(implementation = TaskDto.class))
-                           @RequestBody @Valid  final TaskDto dto) {
+                           @RequestBody @Valid final TaskDto dto) {
         return taskService.updateTask(id, dto);
     }
 
