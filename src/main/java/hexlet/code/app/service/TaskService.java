@@ -1,9 +1,11 @@
 package hexlet.code.app.service;
 
 import hexlet.code.app.dto.TaskDto;
+import hexlet.code.app.model.Label;
 import hexlet.code.app.model.Task;
 import hexlet.code.app.model.TaskStatus;
 import hexlet.code.app.model.User;
+import hexlet.code.app.repository.LabelRepository;
 import hexlet.code.app.repository.TaskRepository;
 import hexlet.code.app.repository.TaskStatusRepository;
 import hexlet.code.app.repository.UserRepository;
@@ -12,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.Null;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -22,6 +26,8 @@ public class TaskService {
     private final UserRepository userRepository;
     @Autowired
     private final TaskStatusRepository taskStatusRepository;
+    @Autowired
+    private final LabelRepository labelRepository;
 
     private final UserService userService;
 
@@ -64,13 +70,19 @@ public class TaskService {
         if (dto.getExecutorId() != null) {
             executor = userRepository.findById(dto.getExecutorId()).orElse(null);
         }
-
+        Set<Label> labelSet = null;
+        if (dto.getLabelIds() != null) {
+            labelSet = dto.getLabelIds().stream()
+                    .map((x) -> labelRepository.findById(x).get())
+                    .collect(Collectors.toSet());
+        }
         return Task.builder()
                 .author(author)
                 .name(dto.getName())
                 .description(dto.getDescription())
                 .taskStatus(taskStatus)
                 .executor(executor)
+                .labels(labelSet)
                 .build();
     }
 }

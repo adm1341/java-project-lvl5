@@ -2,9 +2,10 @@ package hexlet.code.app.controller;
 
 import com.github.database.rider.core.api.dataset.DataSet;
 import com.github.database.rider.junit5.api.DBRider;
-import hexlet.code.app.dto.TaskDto;
-import hexlet.code.app.model.Task;
-import hexlet.code.app.repository.TaskRepository;
+import hexlet.code.app.model.Label;
+import hexlet.code.app.model.TaskStatus;
+import hexlet.code.app.repository.LabelRepository;
+import hexlet.code.app.repository.TaskStatusRepository;
 import hexlet.code.app.utils.TestUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,8 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static hexlet.code.app.controller.TaskController.TASK_CONTROLLER_PATH;
+import static hexlet.code.app.controller.LabelController.LABEL_CONTROLLER_PATH;
+import static hexlet.code.app.controller.TaskStatusController.TASK_STATUS_CONTROLLER_PATH;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
@@ -22,31 +24,24 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @AutoConfigureMockMvc
 @DBRider
 @DataSet(value = {"users.yml", "taskStatus.yml", "task.yml", "labels.yml"}, cleanAfter = true, transactional = true)
-public class TaskControllerTest {
+public class LabelControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
-    TaskRepository taskRepository;
+    LabelRepository labelRepository;
 
     @Autowired
     private TestUtils utils;
 
     @Test
-    void testCreateTask() throws Exception {
-
-        final TaskDto taskDto = new TaskDto();
-        taskDto.setName("Новая задача");
-        taskDto.setDescription("Описание новой задачи");
-        taskDto.setExecutorId(1L);
-        taskDto.setTaskStatusId(1L);
-
-        String content = TestUtils.asJson(taskDto);
+    void testCreateLabel() throws Exception {
+        String content = "{\"name\": \"<баг>\"}";
 
         MockHttpServletResponse responsePost = mockMvc
                 .perform(
                         utils.setJWTToken(
-                                post(TASK_CONTROLLER_PATH)
+                                post(LABEL_CONTROLLER_PATH)
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .content(content),
                                 "John@gmail.com")
@@ -58,18 +53,13 @@ public class TaskControllerTest {
     }
 
     @Test
-    void tesUnCreateTask() throws Exception {
-        final TaskDto taskDto = new TaskDto();
-        taskDto.setDescription("Описание новой задачи");
-        taskDto.setExecutorId(1L);
-        taskDto.setTaskStatusId(1L);
-
-        String content = TestUtils.asJson(taskDto);
+    void tesUnCreateLabel() throws Exception {
+        String content = "{\"name\": \"\"}";
 
         MockHttpServletResponse responsePost = mockMvc
                 .perform(
                         utils.setJWTToken(
-                                post(TASK_CONTROLLER_PATH)
+                                post(LABEL_CONTROLLER_PATH)
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .content(content),
                                 "John@gmail.com")
@@ -81,11 +71,11 @@ public class TaskControllerTest {
     }
 
     @Test
-    void testShowTaskById() throws Exception {
+    void testShowLabelById() throws Exception {
         MockHttpServletResponse response2 = mockMvc
                 .perform(
                         utils.setJWTToken(
-                                get(TASK_CONTROLLER_PATH + "/1"),
+                                get(LABEL_CONTROLLER_PATH + "/1"),
                                 "John@gmail.com")
                 )
                 .andReturn()
@@ -95,18 +85,12 @@ public class TaskControllerTest {
     }
 
     @Test
-    void testUpdateTask() throws Exception {
-        final TaskDto taskDto = new TaskDto();
-        taskDto.setName("НеНовый");
-        taskDto.setDescription("Описание новой задачи");
-        taskDto.setExecutorId(1L);
-        taskDto.setTaskStatusId(1L);
-
-        String content = TestUtils.asJson(taskDto);
+    void testUpdateLabel() throws Exception {
+        String content = "{\"name\": \"НеНовый\"}";
         MockHttpServletResponse responsePost = mockMvc
                 .perform(
                         utils.setJWTToken(
-                                put(TASK_CONTROLLER_PATH + "/1")
+                                put(LABEL_CONTROLLER_PATH + "/1")
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .content(content),
                                 "John@gmail.com")
@@ -117,18 +101,18 @@ public class TaskControllerTest {
         assertThat(responsePost.getStatus()).isEqualTo(200);
 
 
-        Task actualTask = taskRepository.findById(1L).get();
-        assertThat(actualTask).isNotNull();
-        assertThat(actualTask.getName()).isEqualTo("НеНовый");
+        Label actuallabel = labelRepository.findById(1L).get();
+        assertThat(actuallabel).isNotNull();
+        assertThat(actuallabel.getName()).isEqualTo("НеНовый");
 
     }
 
     @Test
-    void testDeleteTaskById() throws Exception {
+    void testDeleteLabelById() throws Exception {
         MockHttpServletResponse response2 = mockMvc
                 .perform(
                         utils.setJWTToken(
-                                delete(TASK_CONTROLLER_PATH + "/2"),
+                                delete(LABEL_CONTROLLER_PATH + "/2"),
                                 "John@gmail.com")
                 )
                 .andReturn()
@@ -136,6 +120,6 @@ public class TaskControllerTest {
 
         assertThat(response2.getStatus()).isEqualTo(200);
 
-        assertThat(taskRepository.existsById(2L)).isFalse();
+        assertThat(labelRepository.existsById(2L)).isFalse();
     }
 }

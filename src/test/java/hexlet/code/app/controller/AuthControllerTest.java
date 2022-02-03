@@ -1,6 +1,5 @@
 package hexlet.code.app.controller;
 
-import com.github.database.rider.core.api.configuration.DBUnit;
 import com.github.database.rider.core.api.dataset.DataSet;
 import com.github.database.rider.junit5.api.DBRider;
 import hexlet.code.app.dto.LoginDto;
@@ -13,7 +12,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 
 import static hexlet.code.app.controller.AuthController.LOGIN;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,10 +19,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-//@Transactional
 @DBRider
-@DBUnit(cacheConnection = true, cacheTableNames = false, allowEmptyFields = true, batchSize = 50)
-@DataSet(value ="users.yml", disableConstraints = true, cleanAfter = true, transactional = true)
+@DataSet(value ="users.yml", cleanAfter = true, transactional = true)
 public class AuthControllerTest {
 
     @Autowired
@@ -33,9 +29,6 @@ public class AuthControllerTest {
     @Autowired
     UserRepository userRepository;
 
-    @Autowired
-    private TestUtils utils;
-
     @Test
     public void login() throws Exception {
 
@@ -43,7 +36,7 @@ public class AuthControllerTest {
                 "John@gmail.com",
                 "123"
         );
-        String content = utils.asJson(loginDto);
+        String content = TestUtils.asJson(loginDto);
 
         MockHttpServletResponse responsePost = mockMvc
                 .perform(
@@ -64,7 +57,7 @@ public class AuthControllerTest {
                 "John@gmail.com",
                 "311"
         );
-        String content = utils.asJson(loginDto);
+        String content = TestUtils.asJson(loginDto);
 
         MockHttpServletResponse responsePost = mockMvc
                 .perform(

@@ -1,6 +1,5 @@
 package hexlet.code.app.controller;
 
-import com.github.database.rider.core.api.configuration.DBUnit;
 import com.github.database.rider.core.api.dataset.DataSet;
 import com.github.database.rider.junit5.api.DBRider;
 import hexlet.code.app.model.TaskStatus;
@@ -13,21 +12,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 
 import static hexlet.code.app.controller.TaskStatusController.TASK_STATUS_CONTROLLER_PATH;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-//@Transactional
 @DBRider
-@DBUnit(cacheConnection = true, cacheTableNames = false, allowEmptyFields = true, batchSize = 50)
-@DataSet(value = {"users.yml", "taskStatus.yml"}, disableConstraints = true, cleanAfter = true, transactional = true)
+@DataSet(value = {"users.yml", "taskStatus.yml"}, cleanAfter = true, transactional = true)
 public class TaskStatusControllerTest {
     @Autowired
     private MockMvc mockMvc;

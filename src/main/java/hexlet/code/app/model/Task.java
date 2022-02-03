@@ -11,6 +11,8 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -21,6 +23,7 @@ import java.util.Date;
 public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false)
     private long id;
 
     @NotBlank
@@ -45,4 +48,12 @@ public class Task {
 
     @CreationTimestamp
     private Date createdAt;
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "task_labels",
+            joinColumns = @JoinColumn(name = "task_id"),
+            inverseJoinColumns = @JoinColumn(name = "labels_id"))
+    @Builder.Default
+    private Set<Label> labels = new LinkedHashSet<>();
+
 }

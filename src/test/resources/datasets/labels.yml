@@ -1,0 +1,10 @@
+labels:
+  - id: 1
+    name: "баг"
+    created_at: "3022-02-05 17:22:00"
+  - id: 2
+    name: "фича"
+    created_at: "3022-02-05 17:22:00"
+task_labels:
+  - task_id: 1
+    labels_id: 1
