@@ -119,7 +119,6 @@ public class TaskControllerTest {
 
         assertThat(responsePost.getStatus()).isEqualTo(200);
 
-
         Task actualTask = taskRepository.findById(1L).get();
         assertThat(actualTask).isNotNull();
         assertThat(actualTask.getName()).isEqualTo("НеНовый");

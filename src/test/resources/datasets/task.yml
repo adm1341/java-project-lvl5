@@ -9,7 +9,7 @@ task:
   - id: 2
     name: "Новая Задача2"
     description: "Описание 2"
-    author_id: 2
+    author_id: 1
     executor_id: 2
     task_status_id: 2
     created_at: "3022-02-05 17:22:00"

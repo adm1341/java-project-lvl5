@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.AllArgsConstructor;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -26,9 +27,8 @@ public class TaskController {
     public static final String TASK_CONTROLLER_PATH = "/tasks";
     public static final String ID = "/{id}";
 
-    private static final String ONLY_AUTHOR_BY_ID = """
-                @TaskRepository.findById(#id).get().getAuthor().getEmail() == authentication.getName()
-            """;
+    private static final String ONLY_AUTHOR_BY_ID = "@taskRepository.findById(#id).get().getAuthor().getEmail() == authentication.getName()";
+
 
     private final TaskRepository taskRepository;
     private final TaskService taskService;
@@ -63,6 +63,7 @@ public class TaskController {
 
     @Operation(summary = "Update task")
     @ApiResponse(responseCode = "200", description = "task updated")
+    @PreAuthorize(ONLY_AUTHOR_BY_ID)
     @PutMapping(ID)
     public Task updateTask(@PathVariable final Long id,
                            // Schema используется, чтобы указать тип данных для параметра
@@ -77,6 +78,7 @@ public class TaskController {
             @ApiResponse(responseCode = "404", description = "task with that id not found")
     })
     @DeleteMapping(ID)
+    @PreAuthorize(ONLY_AUTHOR_BY_ID)
     public void deleteTask(@PathVariable final Long id) {
         taskRepository.deleteById(id);
     }

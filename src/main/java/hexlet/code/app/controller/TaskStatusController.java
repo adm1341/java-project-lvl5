@@ -29,8 +29,8 @@ public class TaskStatusController {
     private final TaskStatusRepository taskStatusRepository;
 
 
-    @Operation(summary = "Create new user")
-    @ApiResponse(responseCode = "201", description = "User created")
+    @Operation(summary = "Create new status")
+    @ApiResponse(responseCode = "201", description = "Status created")
     @PostMapping
     @ResponseStatus(CREATED)
     public TaskStatus registerNew(@RequestBody @Valid final TaskStatusDto dto) {
